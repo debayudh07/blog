@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import Navbar from '@/components/functions/Navbar'
 
 // Mock data structure for posts and categories
 const posts = [
@@ -86,60 +87,12 @@ export default function HomePage() {
     ? posts 
     : posts.filter(post => post.category === selectedCategory)
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setIsMenuOpen(false)
-      }
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Navbar */}
-      <nav className="bg-white shadow-md sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-2xl font-bold text-gray-800 hover:text-blue-600 transition-colors duration-300">
-                My Blog
-              </Link>
-            </div>
-            <div className="hidden md:flex items-center space-x-4">
-              <AuthDialog />
-            </div>
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                aria-expanded={isMenuOpen}
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
-        </div>
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden bg-white shadow-lg"
-            >
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <AuthDialog />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
+      <Navbar />
+
+     
 
       {/* Main Content */}
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
