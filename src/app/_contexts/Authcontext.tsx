@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.user);
       Cookies.set('user', data.user, { expires: 30 }); // Save user in cookies
       Cookies.set('token', data.token, { expires: 30 }); // Save token in cookies
-      window.location.assign('/companion'); // Navigate after signup
+      window.location.assign('/'); // Navigate after signup
     } catch (error) {
       console.error('Signup failed:', error);
     }

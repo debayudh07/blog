@@ -115,6 +115,7 @@ const Navbar = () => {
                 <>
                   <span className="text-gray-800 border-blue-500">Welcome, {user}</span>
                   <Button variant="outline" className="bg-black text-white"><Link href="/createblog">Create new post</Link></Button>
+                  <Button variant="outline" className="bg-white-300 text-black"><Link href="/viewpost">View my posts</Link></Button>
                   <Button variant="outline" className="bg-red-500" onClick={logout}>Logout</Button>
                 </>
               ) : (

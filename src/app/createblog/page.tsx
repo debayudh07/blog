@@ -60,8 +60,8 @@ const BasicInfo = ({ title, setTitle, author, setAuthor, category, setCategory, 
                     className="mt-1"
                 />
             </div>
-            );
-            {'}'}
+        
+            
             <div>
                 <Label htmlFor="author">Author</Label>
                 <Input
@@ -211,7 +211,7 @@ const SEOSettings = ({ seoTitle, setSeoTitle, seoDescription, setSeoDescription,
     </AnimatedSection>
 )
 
-const PublishSettings = ({ isDraft, setIsDraft, publishDate, setPublishDate, isOpen }: { isDraft: boolean, setIsDraft: (value: boolean) => void, publishDate: string, setPublishDate: (value: string) => void, isOpen: boolean, toggleOpen: () => void }) => (
+const PublishSettings = ({ isDraft, setIsDraft, publishDate, setPublishDate, isOpen, toggleOpen }: { isDraft: boolean, setIsDraft: (value: boolean) => void, publishDate: string, setPublishDate: (value: string) => void, isOpen: boolean, toggleOpen: () => void }) => (
     <AnimatedSection title="Publish Settings" isOpen={isOpen} toggleOpen={toggleOpen}>
         <div className="space-y-4">
             <div className="flex items-center space-x-2">
@@ -400,6 +400,4 @@ export default function StylishBlogEditor() {
     )
 }
 
-function toggleOpen(): void {
-    throw new Error('Function not implemented.')
-}
+// Removed unnecessary function definition
