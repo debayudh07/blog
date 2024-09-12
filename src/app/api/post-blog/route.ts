@@ -1,57 +1,87 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import mongoose from 'mongoose';
-import BlogPost from '@/app/_models/Blogpost'; // Import the model
+import { NextRequest, NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongo';
+import { ObjectId } from 'mongodb';
 
-// Connect to MongoDB (Assuming mongoose is already set up)
-const connectDB = async () => {
-  if (mongoose.connections[0].readyState) {
-    return; // already connected
+// Helper function to safely get error message
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { db } = await connectToDatabase();
+    const collection = db.collection('blogposts');
+
+    const blogData = await request.json();
+    console.log('Received blog post data:', blogData);
+
+    const result = await collection.insertOne(blogData);
+    console.log('Inserted blog post with ID:', result.insertedId);
+
+    return NextResponse.json({ message: 'Blog post saved successfully', id: result.insertedId }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('Error in POST handler:', error);
+    return NextResponse.json({ message: 'Failed to save blog post', error: getErrorMessage(error) }, { status: 500 });
   }
-  await mongoose.connect(process.env.MONGODB_URI ?? '', {
-    useUnifiedTopology: true,
-  } as mongoose.ConnectOptions);
-};
+}
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await connectDB();
+export async function GET(request: NextRequest) {
+  try {
+    const { db } = await connectToDatabase();
+    const collection = db.collection('blogposts');
 
-  if (req.method === 'POST') {
-    try {
-      const {
-        title,
-        author,
-        category,
-        content,
-        images,
-        tags,
-        seoTitle,
-        seoDescription,
-        isDraft,
-        publishDate,
-      } = req.body;
+    const posts = await collection.find().limit(10).toArray();
+    console.log('Retrieved posts:', posts);
 
-      const newBlogPost = new BlogPost({
-        title,
-        author,
-        category,
-        content,
-        images,
-        tags,
-        seoTitle,
-        seoDescription,
-        isDraft,
-        publishDate,
-      });
+    return NextResponse.json({ message: 'Posts retrieved successfully', posts }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('Error in GET handler:', error);
+    return NextResponse.json({ message: 'Failed to retrieve posts', error: getErrorMessage(error) }, { status: 500 });
+  }
+}
 
-      await newBlogPost.save();
+export async function PUT(request: NextRequest) {
+  try {
+    const { db } = await connectToDatabase();
+    const collection = db.collection('blogposts');
 
-      return res.status(200).json({ message: 'Blog post saved successfully' });
-    } catch (error) {
-      console.error('Error saving blog post:', error);
-      return res.status(500).json({ message: 'Failed to save blog post' });
+    const { id, ...updateData } = await request.json();
+    console.log('Updating blog post with ID:', id);
+
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateData }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ message: 'Blog post not found' }, { status: 404 });
     }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+
+    return NextResponse.json({ message: 'Blog post updated successfully' }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('Error in PUT handler:', error);
+    return NextResponse.json({ message: 'Failed to update blog post', error: getErrorMessage(error) }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { db } = await connectToDatabase();
+    const collection = db.collection('blogposts');
+
+    const { id } = await request.json();
+    console.log('Deleting blog post with ID:', id);
+
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ message: 'Blog post not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Blog post deleted successfully' }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('Error in DELETE handler:', error);
+    return NextResponse.json({ message: 'Failed to delete blog post', error: getErrorMessage(error) }, { status: 500 });
   }
 }
