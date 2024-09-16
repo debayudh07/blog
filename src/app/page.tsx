@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import Navbar from '@/components/functions/Navbar'
+import PostList from '@/components/functions/Postlist'
 
 // Mock data structure for posts and categories
 const posts = [
@@ -25,63 +26,13 @@ const posts = [
 
 const categories = ["All", "Technology", "Health", "Travel", "Food", "Lifestyle"]
 
-function AuthDialog() {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Login / Signup</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Authentication</DialogTitle>
-          <DialogDescription>
-            Login or create a new account to access all features.
-          </DialogDescription>
-        </DialogHeader>
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="signup">Signup</TabsTrigger>
-          </TabsList>
-          <TabsContent value="login">
-            <form className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="Enter your email" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="Enter your password" required />
-              </div>
-              <Button type="submit" className="w-full">Login</Button>
-            </form>
-          </TabsContent>
-          <TabsContent value="signup">
-            <form className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="Enter your name" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="Enter your email" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="Create a password" required />
-              </div>
-              <Button type="submit" className="w-full">Sign Up</Button>
-            </form>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
-  )
-}
+
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+
+ 
 
   const filteredPosts = selectedCategory === "All" 
     ? posts 
@@ -134,31 +85,7 @@ export default function HomePage() {
         </section>
 
         {/* Posts Section */}
-        <section>
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
-            {selectedCategory === "All" ? "All Posts" : `${selectedCategory} Posts`}
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredPosts.map((post, index) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white shadow-md rounded-lg p-6 hover:shadow-xl transition-shadow duration-300"
-              >
-                <h3 className="text-lg font-semibold mb-2 text-blue-600">{post.title}</h3>
-                <p className="text-gray-600 mb-4">{post.content.substring(0, 100)}...</p>
-                <div className="flex flex-wrap justify-between items-center">
-                  <Link href={`/post/${post.id}`} className="text-blue-500 hover:text-blue-600 transition-colors duration-300 mb-2 sm:mb-0">
-                    Read more →
-                  </Link>
-                  <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{post.category}</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+        <PostList  selectedCategory={selectedCategory} />
       </main>
 
       {/* Footer */}
