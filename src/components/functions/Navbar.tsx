@@ -144,11 +144,13 @@ const Navbar = () => {
               transition={{ duration: 0.3 }}
               className="md:hidden bg-white shadow-lg"
             >
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col">
                 {user ? (
                   <>
                     <span className="block text-gray-800">Welcome, {user}</span>
-                    <Button variant="outline" onClick={logout} className="w-full">Logout</Button>
+                    <Button variant="outline" className="bg-black text-white"><Link href="/createblog">Create new post</Link></Button>
+                  <Button variant="outline" className="bg-white-300 text-black"><Link href="/viewpost">View my posts</Link></Button>
+                  <Button variant="outline" className="bg-red-500" onClick={logout}>Logout</Button>
                   </>
                 ) : (
                   <AuthDialog />

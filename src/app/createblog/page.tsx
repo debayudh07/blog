@@ -8,11 +8,11 @@ import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Loader2, ImagePlus, Tag, Globe, Calendar, ChevronDown, ChevronUp, X } from "lucide-react"
+import { Loader2, ImagePlus,  ChevronDown, ChevronUp, X } from "lucide-react"
 import Navbar from '@/components/functions/Navbar'
 
 const MotionCard = motion(Card)
