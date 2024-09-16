@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import  { Schema, model, models } from 'mongoose';
 
 const BlogPostSchema = new Schema({
   title: { type: String, required: true },
