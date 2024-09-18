@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, MessageCircle, X } from 'lucide-react'
+import { Heart, MessageCircle, X, Trash2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 export default function PostViewer() {
-  const [posts, setPosts] = useState<{ id: number, title: string, content: string, likes: number }[]>([])
-  const [selectedPost, setSelectedPost] = useState<{ id: number, title: string, content: string, likes: number } | null>(null)
+  const [posts, setPosts] = useState<{ id: number, title: string, content: string, likes: number, image: string }[]>([])
+  const [selectedPost, setSelectedPost] = useState<{ id: number, title: string, content: string, likes: number, image: string } | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function PostViewer() {
     const fetchPosts = async () => {
       try {
         const response = await fetch('/api/post-blog', {
-          method: 'GET', // Specify the GET method
+          method: 'GET',
         })
         const data = await response.json()
 
@@ -40,7 +40,29 @@ export default function PostViewer() {
     ))
   }
 
-  const openModal = (post: { id: number, title: string, content: string, likes: number }) => {
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch('/api/post-blog', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json', // Ensure JSON content type is set
+        },
+        body: JSON.stringify({ id }), // Sending the ID in the request body
+      });
+  
+      if (response.ok) {
+        setPosts(posts.filter(post => post.id !== id)); // Remove the deleted post from state
+        console.log('Post deleted successfully');
+      } else {
+        const errorData = await response.json(); // Parse error message from server
+        console.error('Failed to delete post:', errorData.message);
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  const openModal = (post: { id: number, title: string, content: string, likes: number, image: string }) => {
     setSelectedPost(post)
     setIsModalOpen(true)
   }
@@ -68,16 +90,23 @@ export default function PostViewer() {
                   <CardTitle>{post.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-grow">
+                  <img src={post.image} alt={post.title} className="mb-4 w-full h-48 object-cover rounded-lg" />
                   <p>{post.content.substring(0, 100)}...</p>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center">
-                  <Button variant="ghost" onClick={() => handleLike(post.id)}>
-                    <Heart className="mr-2 h-4 w-4" />
-                    {post.likes}
-                  </Button>
-                  <Button variant="ghost" onClick={() => openModal(post)}>
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    View Full Post
+                  <div className="flex space-x-2">
+                    <Button variant="ghost" onClick={() => handleLike(post.id)}>
+                      <Heart className="mr-2 h-4 w-4" />
+                      {post.likes}
+                    </Button>
+                    <Button variant="ghost" onClick={() => openModal(post)}>
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      View Full Post
+                    </Button>
+                  </div>
+                  <Button variant="ghost" onClick={() => handleDelete(post.id)}>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
                   </Button>
                 </CardFooter>
               </Card>
@@ -92,6 +121,7 @@ export default function PostViewer() {
             <DialogTitle>{selectedPost?.title}</DialogTitle>
           </DialogHeader>
           <DialogDescription>
+            <img src={selectedPost?.image} alt={selectedPost?.title} className="mb-4 w-full h-48 object-cover rounded-lg" />
             {selectedPost?.content}
           </DialogDescription>
           <div className="flex justify-between items-center mt-4">

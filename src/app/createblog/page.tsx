@@ -90,7 +90,7 @@ const BasicInfo = ({ title, setTitle, author, setAuthor, category, setCategory, 
     </AnimatedSection>
 )
 
-const ContentEditor = ({ editor, isOpen, toggleOpen }: { editor: any, isOpen: boolean, toggleOpen: () => void }) => (
+const ContentEditor = ({ editor, isOpen, toggleOpen }: { editor: ReturnType<typeof useEditor> | null, isOpen: boolean, toggleOpen: () => void }) => (
     <AnimatedSection title="Content Editor" isOpen={isOpen} toggleOpen={toggleOpen}>
         <div className="border rounded-md p-2 bg-white">
             <EditorContent editor={editor} />
@@ -98,7 +98,7 @@ const ContentEditor = ({ editor, isOpen, toggleOpen }: { editor: any, isOpen: bo
     </AnimatedSection>
 )
 
-const ImageSection = ({ images, setImages, editor, isOpen, toggleOpen }: { images: any[], setImages: React.Dispatch<React.SetStateAction<any[]>>, editor: any, isOpen: boolean, toggleOpen: () => void }) => {
+const ImageSection = ({ images, setImages, editor, isOpen, toggleOpen }: { images: { file: File, preview: string }[], setImages: React.Dispatch<React.SetStateAction<{ file: File, preview: string }[]>>, editor: ReturnType<typeof useEditor> | null, isOpen: boolean, toggleOpen: () => void }) => {
     const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (files) {
@@ -121,7 +121,6 @@ const ImageSection = ({ images, setImages, editor, isOpen, toggleOpen }: { image
             editor.chain().focus().setImage({ src }).run();
         }
     }, [editor]);
-
 
     return (
         <AnimatedSection title="Image Management" isOpen={isOpen} toggleOpen={toggleOpen}>

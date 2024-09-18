@@ -26,11 +26,7 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
 
 
- 
 
-  const filteredPosts = selectedCategory === "All" 
-    ? posts 
-    : posts.filter(post => post.category === selectedCategory)
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">

@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { db } = await connectToDatabase();
     const collection = db.collection('blogposts');
@@ -70,9 +70,19 @@ export async function DELETE(request: NextRequest) {
     const { db } = await connectToDatabase();
     const collection = db.collection('blogposts');
 
-    const { id } = await request.json();
+    // Parse the request body
+    const body = await request.json();
+    const { id } = body;
+
+    // Validate that the ID is provided and is a valid MongoDB ObjectId
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
+    }
+
+    // Log the ID being deleted
     console.log('Deleting blog post with ID:', id);
 
+    // Perform the deletion using MongoDB ObjectId
     const result = await collection.deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
@@ -80,7 +90,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({ message: 'Blog post deleted successfully' }, { status: 200 });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Error in DELETE handler:', error);
     return NextResponse.json({ message: 'Failed to delete blog post', error: getErrorMessage(error) }, { status: 500 });
   }
