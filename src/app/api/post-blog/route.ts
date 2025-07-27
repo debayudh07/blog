@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongo';
-import { ObjectId } from 'mongodb';
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  doc, 
+  updateDoc, 
+  deleteDoc, 
+  query, 
+  orderBy, 
+  limit,
+  where,
+  getDoc
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 // Helper function to safely get error message
 function getErrorMessage(error: unknown): string {
@@ -10,29 +22,76 @@ function getErrorMessage(error: unknown): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { db } = await connectToDatabase();
-    const collection = db.collection('blogposts');
-
     const blogData = await request.json();
     console.log('Received blog post data:', blogData);
 
-    const result = await collection.insertOne(blogData);
-    console.log('Inserted blog post with ID:', result.insertedId);
+    // Add timestamp
+    const blogPost = {
+      ...blogData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 
-    return NextResponse.json({ message: 'Blog post saved successfully', id: result.insertedId }, { status: 200 });
+    const docRef = await addDoc(collection(db, 'blogposts'), blogPost);
+    console.log('Inserted blog post with ID:', docRef.id);
+
+    return NextResponse.json({ message: 'Blog post saved successfully', id: docRef.id }, { status: 200 });
   } catch (error: unknown) {
     console.error('Error in POST handler:', error);
     return NextResponse.json({ message: 'Failed to save blog post', error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { db } = await connectToDatabase();
-    const collection = db.collection('blogposts');
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+    const postId = searchParams.get('postId');
+    const limitParam = searchParams.get('limit');
+    
+    // If postId is provided, fetch a single post
+    if (postId) {
+      const docRef = doc(db, 'blogposts', postId);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        return NextResponse.json({ message: 'Post not found' }, { status: 404 });
+      }
+      
+      const post = {
+        id: docSnap.id,
+        ...docSnap.data()
+      };
+      
+      console.log('Retrieved single post:', post.id);
+      return NextResponse.json({ message: 'Post retrieved successfully', post }, { status: 200 });
+    }
+    
+    let q;
+    if (userId) {
+      // Get posts by specific user
+      q = query(
+        collection(db, 'blogposts'),
+        where('authorId', '==', userId),
+        orderBy('createdAt', 'desc'),
+        limit(limitParam ? parseInt(limitParam) : 10)
+      );
+    } else {
+      // Get all posts
+      q = query(
+        collection(db, 'blogposts'),
+        orderBy('createdAt', 'desc'),
+        limit(limitParam ? parseInt(limitParam) : 10)
+      );
+    }
 
-    const posts = await collection.find().limit(10).toArray();
-    console.log('Retrieved posts:', posts);
+    const querySnapshot = await getDocs(q);
+    const posts = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    console.log('Retrieved posts:', posts.length);
 
     return NextResponse.json({ message: 'Posts retrieved successfully', posts }, { status: 200 });
   } catch (error: unknown) {
@@ -43,20 +102,29 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { db } = await connectToDatabase();
-    const collection = db.collection('blogposts');
-
     const { id, ...updateData } = await request.json();
+    
+    if (!id) {
+      return NextResponse.json({ message: 'Post ID is required' }, { status: 400 });
+    }
+
     console.log('Updating blog post with ID:', id);
 
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updateData }
-    );
+    // Add updated timestamp
+    const updatedPost = {
+      ...updateData,
+      updatedAt: new Date().toISOString()
+    };
 
-    if (result.matchedCount === 0) {
+    const docRef = doc(db, 'blogposts', id);
+    
+    // Check if document exists
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
       return NextResponse.json({ message: 'Blog post not found' }, { status: 404 });
     }
+
+    await updateDoc(docRef, updatedPost);
 
     return NextResponse.json({ message: 'Blog post updated successfully' }, { status: 200 });
   } catch (error: unknown) {
@@ -67,30 +135,27 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { db } = await connectToDatabase();
-    const collection = db.collection('blogposts');
-
-    // Parse the request body
     const body = await request.json();
     const { id } = body;
 
-    // Validate that the ID is provided and is a valid MongoDB ObjectId
-    if (!id || !ObjectId.isValid(id)) {
-      return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ message: 'Post ID is required' }, { status: 400 });
     }
 
-    // Log the ID being deleted
     console.log('Deleting blog post with ID:', id);
 
-    // Perform the deletion using MongoDB ObjectId
-    const result = await collection.deleteOne({ _id: new ObjectId(id) });
-
-    if (result.deletedCount === 0) {
+    const docRef = doc(db, 'blogposts', id);
+    
+    // Check if document exists
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
       return NextResponse.json({ message: 'Blog post not found' }, { status: 404 });
     }
 
+    await deleteDoc(docRef);
+
     return NextResponse.json({ message: 'Blog post deleted successfully' }, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in DELETE handler:', error);
     return NextResponse.json({ message: 'Failed to delete blog post', error: getErrorMessage(error) }, { status: 500 });
   }

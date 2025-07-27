@@ -12,26 +12,30 @@ import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Loader2, ImagePlus,  ChevronDown, ChevronUp, X } from "lucide-react"
+import { Loader2, ImagePlus, X } from "lucide-react"
 import Navbar from '@/components/functions/Navbar'
+import { AdminGuard } from '@/components/functions/AdminGuard'
+import { useAuth } from '@/app/_contexts/Authcontext'
+import { useRouter } from 'next/navigation'
 
 const MotionCard = motion(Card)
 
-const AnimatedSection = ({ title, children, isOpen, toggleOpen }: { title: string, children: React.ReactNode, isOpen: boolean, toggleOpen: () => void }) => (
-    <MotionCard className="mb-6 overflow-hidden" layout>
-        <CardHeader className="cursor-pointer" onClick={toggleOpen}>
-            <CardTitle className="flex justify-between items-center">
+const FloatingCard = ({ title, children, className = "" }: { title: string, children: React.ReactNode, className?: string }) => (
+    <MotionCard 
+        className={`bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl border border-gray-700/50 shadow-2xl hover:shadow-primary/20 transition-all duration-500 rounded-3xl overflow-hidden ${className}`}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        whileHover={{ scale: 1.02, y: -5 }}
+    >
+        <CardHeader className="pb-4">
+            <CardTitle className="text-white text-lg font-semibold bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent">
                 {title}
-                {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </CardTitle>
         </CardHeader>
-        <motion.div
-            initial={false}
-            animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-        >
-            <CardContent>{children}</CardContent>
-        </motion.div>
+        <CardContent className="text-gray-300 space-y-4">
+            {children}
+        </CardContent>
     </MotionCard>
 )
 
@@ -42,77 +46,110 @@ type BasicInfoProps = {
     setAuthor: (value: string) => void;
     category: string;
     setCategory: (value: string) => void;
-    isOpen: boolean;
-    toggleOpen: () => void;
 };
 
-const BasicInfo = ({ title, setTitle, author, setAuthor, category, setCategory, isOpen, toggleOpen }: BasicInfoProps) => (
-    <AnimatedSection title="Basic Information" isOpen={isOpen} toggleOpen={toggleOpen}>
+const BasicInfo = ({ title, setTitle, author, setAuthor, category, setCategory }: BasicInfoProps) => (
+    <FloatingCard title="Basic Information" className="h-fit">
         <div className="space-y-4">
-            <div>
-                <Label htmlFor="title">Title</Label>
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+            >
+                <Label htmlFor="title" className="text-gray-300 font-medium text-sm">Title</Label>
                 <Input
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Enter your blog post title"
                     required
-                    className="mt-1"
+                    className="mt-2 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 focus:border-primary focus:ring-primary/20 transition-all duration-300"
                 />
-            </div>
-        
+            </motion.div>
             
-            <div>
-                <Label htmlFor="author">Author</Label>
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+            >
+                <Label htmlFor="author" className="text-gray-300 font-medium text-sm">Author</Label>
                 <Input
                     id="author"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
                     placeholder="Enter author name"
-                    className="mt-1"
+                    className="mt-2 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 focus:border-primary focus:ring-primary/20 transition-all duration-300"
                 />
-            </div>
-            <div>
-                <Label htmlFor="category">Category</Label>
+            </motion.div>
+            
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+            >
+                <Label htmlFor="category" className="text-gray-300 font-medium text-sm">Category</Label>
                 <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger id="category" className="mt-1">
-                        <SelectValue placeholder="Select a category" />
+                    <SelectTrigger id="category" className="mt-2 bg-gray-700/50 border-gray-600/50 text-white focus:border-primary focus:ring-primary/20 transition-all duration-300">
+                        <SelectValue placeholder="Select a category" className="text-gray-400" />
                     </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="technology">Technology</SelectItem>
-                        <SelectItem value="lifestyle">Lifestyle</SelectItem>
-                        <SelectItem value="travel">Travel</SelectItem>
-                        <SelectItem value="food">Food</SelectItem>
+                    <SelectContent className="bg-gray-800 border-gray-700/50 text-white">
+                        <SelectItem value="technology" className="hover:bg-gray-700/50 focus:bg-gray-700/50">Technology</SelectItem>
+                        <SelectItem value="lifestyle" className="hover:bg-gray-700/50 focus:bg-gray-700/50">Lifestyle</SelectItem>
+                        <SelectItem value="travel" className="hover:bg-gray-700/50 focus:bg-gray-700/50">Travel</SelectItem>
+                        <SelectItem value="food" className="hover:bg-gray-700/50 focus:bg-gray-700/50">Food</SelectItem>
                     </SelectContent>
                 </Select>
+            </motion.div>
+        </div>
+    </FloatingCard>
+)
+
+const ContentEditor = ({ editor }: { editor: ReturnType<typeof useEditor> | null }) => (
+    <FloatingCard title="Content Editor" className="col-span-full">
+        <motion.div 
+            className="border border-gray-600/50 rounded-xl p-4 bg-gray-700/30 backdrop-blur-sm min-h-[350px] hover:border-gray-500/50 transition-all duration-300"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+        >
+            <div className="prose prose-invert max-w-none">
+                <EditorContent 
+                    editor={editor} 
+                    className="text-gray-300 focus:outline-none [&_.ProseMirror]:focus:outline-none [&_.ProseMirror]:min-h-[300px] [&_.ProseMirror]:p-4"
+                />
             </div>
-        </div>
-    </AnimatedSection>
+        </motion.div>
+    </FloatingCard>
 )
 
-const ContentEditor = ({ editor, isOpen, toggleOpen }: { editor: ReturnType<typeof useEditor> | null, isOpen: boolean, toggleOpen: () => void }) => (
-    <AnimatedSection title="Content Editor" isOpen={isOpen} toggleOpen={toggleOpen}>
-        <div className="border rounded-md p-2 bg-white">
-            <EditorContent editor={editor} />
-        </div>
-    </AnimatedSection>
-)
-
-const ImageSection = ({ images, setImages, editor, isOpen, toggleOpen }: { images: { file: File, preview: string }[], setImages: React.Dispatch<React.SetStateAction<{ file: File, preview: string }[]>>, editor: ReturnType<typeof useEditor> | null, isOpen: boolean, toggleOpen: () => void }) => {
+const ImageSection = ({ images, setImages, editor }: { images: { file: File, preview: string }[], setImages: React.Dispatch<React.SetStateAction<{ file: File, preview: string }[]>>, editor: ReturnType<typeof useEditor> | null }) => {
     const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (files) {
-            const newImages = Array.from(files).map(file => ({
-                file,
-                preview: URL.createObjectURL(file),
-            }));
-            setImages(prev => [...prev, ...newImages]);
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64 = e.target?.result as string;
+                    setImages(prev => [...prev, {
+                        file,
+                        preview: base64
+                    }]);
+                };
+                reader.readAsDataURL(file);
+            });
         }
     }, [setImages]);
 
     // Remove image from state
     const removeImage = useCallback((index: number) => {
-        setImages(prev => prev.filter((_, i) => i !== index));
+        setImages(prev => {
+            const imageToRemove = prev[index];
+            // Clean up blob URL if it exists
+            if (imageToRemove?.preview?.startsWith('blob:')) {
+                URL.revokeObjectURL(imageToRemove.preview);
+            }
+            return prev.filter((_, i) => i !== index);
+        });
     }, [setImages]);
 
     // Add image to editor content
@@ -123,9 +160,14 @@ const ImageSection = ({ images, setImages, editor, isOpen, toggleOpen }: { image
     }, [editor]);
 
     return (
-        <AnimatedSection title="Image Management" isOpen={isOpen} toggleOpen={toggleOpen}>
+        <FloatingCard title="Image Management" className="h-fit">
             <div className="space-y-4">
-                <div className="flex items-center space-x-2">
+                <motion.div 
+                    className="flex items-center space-x-2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                >
                     <Input
                         id="image-upload"
                         type="file"
@@ -134,108 +176,152 @@ const ImageSection = ({ images, setImages, editor, isOpen, toggleOpen }: { image
                         className="hidden"
                         multiple
                     />
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => document.getElementById('image-upload')?.click()}
+                    <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         className="w-full"
                     >
-                        <ImagePlus className="mr-2 h-4 w-4" />
-                        Upload Images
-                    </Button>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => document.getElementById('image-upload')?.click()}
+                            className="w-full h-10 bg-gray-700/50 border-gray-600/50 text-gray-300 hover:bg-gray-600/50 hover:text-white hover:border-primary/50 transition-all duration-300"
+                        >
+                            <ImagePlus className="mr-2 h-4 w-4" />
+                            Upload Images
+                        </Button>
+                    </motion.div>
+                </motion.div>
+                <div className="grid grid-cols-2 gap-3">
                     {images.map((image, index) => (
-                        <div key={index} className="relative group">
-                            <img
-                                src={image.preview}
-                                alt={`Uploaded image ${index + 1}`}
-                                className="w-full h-32 object-cover rounded-md cursor-pointer"
-                                onClick={() => addImageToEditor(image.preview)}
-                            />
-                            <button
-                                onClick={() => removeImage(index)}
-                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                                <X size={16} />
-                            </button>
-                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                Click to add to post
+                        <motion.div 
+                            key={index} 
+                            className="relative group"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                            whileHover={{ scale: 1.05 }}
+                        >
+                            <div className="relative overflow-hidden rounded-lg border border-gray-600/50 bg-gray-700/30 backdrop-blur-sm">
+                                <img
+                                    src={image.preview}
+                                    alt={`Uploaded image ${index + 1}`}
+                                    className="w-full h-20 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-110"
+                                    onClick={() => addImageToEditor(image.preview)}
+                                />
+                                <motion.button
+                                    onClick={() => removeImage(index)}
+                                    className="absolute top-1 right-1 bg-red-600/90 hover:bg-red-700 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-sm"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                >
+                                    <X size={12} />
+                                </motion.button>
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent text-white text-xs p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    Click to add to post
+                                </div>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>
-        </AnimatedSection>
+        </FloatingCard>
     )
 }
 
-const Tags = ({ tags, setTags, isOpen, toggleOpen }: { tags: string, setTags: React.Dispatch<React.SetStateAction<string>>, isOpen: boolean, toggleOpen: () => void }) => (
-    <AnimatedSection title="Tags" isOpen={isOpen} toggleOpen={toggleOpen}>
-        <Label htmlFor="tags">Enter tags (comma-separated)</Label>
-        <Input
-            id="tags"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            placeholder="Enter tags, separated by commas"
-            className="mt-1"
-        />
-    </AnimatedSection>
+const Tags = ({ tags, setTags }: { tags: string, setTags: React.Dispatch<React.SetStateAction<string>> }) => (
+    <FloatingCard title="Tags" className="h-fit">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+        >
+            <Label htmlFor="tags" className="text-gray-300 font-medium text-sm">Enter tags (comma-separated)</Label>
+            <Input
+                id="tags"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="Enter tags, separated by commas"
+                className="mt-2 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 focus:border-primary focus:ring-primary/20 transition-all duration-300"
+            />
+        </motion.div>
+    </FloatingCard>
 )
 
-const SEOSettings = ({ seoTitle, setSeoTitle, seoDescription, setSeoDescription, isOpen, toggleOpen }: { seoTitle: string, setSeoTitle: (value: string) => void, seoDescription: string, setSeoDescription: (value: string) => void, isOpen: boolean, toggleOpen: () => void }) => (
-    <AnimatedSection title="SEO Settings" isOpen={isOpen} toggleOpen={toggleOpen}>
+const SEOSettings = ({ seoTitle, setSeoTitle, seoDescription, setSeoDescription }: { seoTitle: string, setSeoTitle: (value: string) => void, seoDescription: string, setSeoDescription: (value: string) => void }) => (
+    <FloatingCard title="SEO Settings" className="h-fit">
         <div className="space-y-4">
-            <div>
-                <Label htmlFor="seoTitle">SEO Title</Label>
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+            >
+                <Label htmlFor="seoTitle" className="text-gray-300 font-medium text-sm">SEO Title</Label>
                 <Input
                     id="seoTitle"
                     value={seoTitle}
                     onChange={(e) => setSeoTitle(e.target.value)}
                     placeholder="Enter SEO title"
-                    className="mt-1"
+                    className="mt-2 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 focus:border-primary focus:ring-primary/20 transition-all duration-300"
                 />
-            </div>
-            <div>
-                <Label htmlFor="seoDescription">SEO Description</Label>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+            >
+                <Label htmlFor="seoDescription" className="text-gray-300 font-medium text-sm">SEO Description</Label>
                 <Textarea
                     id="seoDescription"
                     value={seoDescription}
                     onChange={(e) => setSeoDescription(e.target.value)}
                     placeholder="Enter SEO description"
-                    className="mt-1"
+                    className="mt-2 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 focus:border-primary focus:ring-primary/20 transition-all duration-300 min-h-[80px] resize-none"
                 />
-            </div>
+            </motion.div>
         </div>
-    </AnimatedSection>
+    </FloatingCard>
 )
 
-const PublishSettings = ({ isDraft, setIsDraft, publishDate, setPublishDate, isOpen, toggleOpen }: { isDraft: boolean, setIsDraft: (value: boolean) => void, publishDate: string, setPublishDate: (value: string) => void, isOpen: boolean, toggleOpen: () => void }) => (
-    <AnimatedSection title="Publish Settings" isOpen={isOpen} toggleOpen={toggleOpen}>
+const PublishSettings = ({ isDraft, setIsDraft, publishDate, setPublishDate }: { isDraft: boolean, setIsDraft: (value: boolean) => void, publishDate: string, setPublishDate: (value: string) => void }) => (
+    <FloatingCard title="Publish Settings" className="h-fit">
         <div className="space-y-4">
-            <div className="flex items-center space-x-2">
+            <motion.div 
+                className="flex items-center space-x-3"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+            >
                 <Switch
                     id="draft-mode"
                     checked={isDraft}
                     onCheckedChange={setIsDraft}
+                    className="data-[state=checked]:bg-primary"
                 />
-                <Label htmlFor="draft-mode">Save as draft</Label>
-            </div>
-            <div>
-                <Label htmlFor="publishDate">Publish Date</Label>
+                <Label htmlFor="draft-mode" className="text-gray-300 font-medium cursor-pointer text-sm">Save as draft</Label>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+            >
+                <Label htmlFor="publishDate" className="text-gray-300 font-medium text-sm">Publish Date</Label>
                 <Input
                     id="publishDate"
                     type="datetime-local"
                     value={publishDate}
                     onChange={(e) => setPublishDate(e.target.value)}
-                    className="mt-1"
+                    className="mt-2 bg-gray-700/50 border-gray-600/50 text-white focus:border-primary focus:ring-primary/20 transition-all duration-300"
                 />
-            </div>
+            </motion.div>
         </div>
-    </AnimatedSection>
+    </FloatingCard>
 )
 
 export default function StylishBlogEditor() {
+    const { user } = useAuth();
+    const router = useRouter();
+    
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [category, setCategory] = useState('')
@@ -246,18 +332,12 @@ export default function StylishBlogEditor() {
     const [publishDate, setPublishDate] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [images, setImages] = useState<{ file: File, preview: string }[]>([])
-    type OpenSections = {
-        [key: string]: boolean;
-    };
 
-    const [openSections, setOpenSections] = useState<OpenSections>({
-        basicInfo: true,
-        contentEditor: true,
-        imageSection: false,
-        tags: false,
-        seoSettings: false,
-        publishSettings: false,
-    });
+    // Redirect if not authenticated
+    if (!user) {
+        router.push('/');
+        return null;
+    }
 
     const editor = useEditor({
         extensions: [StarterKit, Image],
@@ -268,13 +348,20 @@ export default function StylishBlogEditor() {
         event.preventDefault();
         setIsSubmitting(true);
 
+        if (!user) {
+            alert('You must be logged in to create a blog post');
+            setIsSubmitting(false);
+            return;
+        }
+
         // Prepare the blog post data
         const blogData = {
             title,
-            author,
+            author: author || user.displayName || user.email?.split('@')[0] || 'Anonymous',
+            authorId: user.uid, // Firebase user ID
             category,
             content: editor?.getHTML(),
-            images: images.map(image => image.file), // Get image files to send to backend
+            images: images.map(image => image.preview), // Use the preview URLs instead of File objects
             tags: tags.split(',').map(tag => tag.trim()),
             seoTitle,
             seoDescription,
@@ -300,6 +387,9 @@ export default function StylishBlogEditor() {
             console.log('Blog post submitted successfully:', result);
 
             alert('Blog post submitted successfully!');
+            
+            // Reset form or redirect
+            router.push('/');
         } catch (error) {
             console.error('Error submitting blog post:', error);
             alert('Failed to submit blog post');
@@ -308,95 +398,117 @@ export default function StylishBlogEditor() {
         }
     };
 
-    const toggleSection = (section: string) => {
-        setOpenSections(prev => ({ ...prev, [section]: !prev[section] }))
-    }
-
     return (
-        <div>
-            <Navbar />
+        <AdminGuard>
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+                <Navbar />
 
-            <div className="container mx-auto py-8 px-4 bg-gray-100 min-h-screen">
+            <div className="container mx-auto py-8 px-4 min-h-screen">
                 <motion.h1
-                    className="text-4xl font-bold mb-6 text-center text-primary"
+                    className="text-5xl font-bold mb-12 text-center bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent"
                     initial={{ opacity: 0, y: -50 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.6 }}
                 >
                     Create a New Blog Post
                 </motion.h1>
-                <motion.div
-                    className="max-w-3xl mx-auto"
+                
+                <motion.form
+                    onSubmit={handleSubmit}
+                    className="max-w-7xl mx-auto"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <BasicInfo
-                        title={title}
-                        setTitle={setTitle}
-                        author={author}
-                        setAuthor={setAuthor}
-                        category={category}
-                        setCategory={setCategory}
-                        isOpen={openSections.basicInfo}
-                        toggleOpen={() => toggleSection('basicInfo')}
-                    />
-                    <ContentEditor
-                        editor={editor}
-                        isOpen={openSections.contentEditor}
-                        toggleOpen={() => toggleSection('contentEditor')}
-                    />
-                    <ImageSection
-                        images={images}
-                        setImages={setImages}
-                        editor={editor}
-                        isOpen={openSections.imageSection}
-                        toggleOpen={() => toggleSection('imageSection')}
-                    />
-                    <Tags
-                        tags={tags}
-                        setTags={setTags}
-                        isOpen={openSections.tags}
-                        toggleOpen={() => toggleSection('tags')}
-                    />
-                    <SEOSettings
-                        seoTitle={seoTitle}
-                        setSeoTitle={setSeoTitle}
-                        seoDescription={seoDescription}
-                        setSeoDescription={setSeoDescription}
-                        isOpen={openSections.seoSettings}
-                        toggleOpen={() => toggleSection('seoSettings')}
-                    />
-                    <PublishSettings
-                        isDraft={isDraft}
-                        setIsDraft={setIsDraft}
-                        publishDate={publishDate}
-                        setPublishDate={setPublishDate}
-                        isOpen={openSections.publishSettings}
-                        toggleOpen={() => toggleSection('publishSettings')}
-                    />
+                    {/* Bento Grid Layout */}
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 auto-rows-min">
+                        {/* Basic Info - Takes 2 columns */}
+                        <div className="lg:col-span-2">
+                            <BasicInfo
+                                title={title}
+                                setTitle={setTitle}
+                                author={author}
+                                setAuthor={setAuthor}
+                                category={category}
+                                setCategory={setCategory}
+                            />
+                        </div>
+
+                        {/* Image Management - Takes 1 column */}
+                        <div className="lg:col-span-1">
+                            <ImageSection
+                                images={images}
+                                setImages={setImages}
+                                editor={editor}
+                            />
+                        </div>
+
+                        {/* Tags - Takes 1 column */}
+                        <div className="lg:col-span-1">
+                            <Tags
+                                tags={tags}
+                                setTags={setTags}
+                            />
+                        </div>
+
+                        {/* Content Editor - Full width */}
+                        <div className="lg:col-span-4">
+                            <ContentEditor editor={editor} />
+                        </div>
+
+                        {/* SEO Settings - Takes 2 columns */}
+                        <div className="lg:col-span-2">
+                            <SEOSettings
+                                seoTitle={seoTitle}
+                                setSeoTitle={setSeoTitle}
+                                seoDescription={seoDescription}
+                                setSeoDescription={setSeoDescription}
+                            />
+                        </div>
+
+                        {/* Publish Settings - Takes 2 columns */}
+                        <div className="lg:col-span-2">
+                            <PublishSettings
+                                isDraft={isDraft}
+                                setIsDraft={setIsDraft}
+                                publishDate={publishDate}
+                                setPublishDate={setPublishDate}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Main Submit Button */}
                     <motion.div
-                        className="mt-6"
+                        className="mt-12 max-w-md mx-auto"
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.4 }}
                     >
-                        <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full bg-primary hover:bg-primary-dark transition-colors duration-300">
-                            {isSubmitting ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Submitting...
-                                </>
-                            ) : (
-                                'Submit Blog Post'
-                            )}
-                        </Button>
-
+                        <FloatingCard title="Publish Your Post" className="text-center">
+                            <motion.div
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <Button 
+                                    type="submit"
+                                    disabled={isSubmitting} 
+                                    className="w-full h-16 bg-gradient-to-r from-primary to-emerald-400 text-black hover:from-emerald-400 hover:to-primary transition-all duration-300 font-bold text-xl shadow-2xl hover:shadow-primary/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-2xl"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+                                            Publishing...
+                                        </>
+                                    ) : (
+                                        'Publish Blog Post'
+                                    )}
+                                </Button>
+                            </motion.div>
+                        </FloatingCard>
                     </motion.div>
-                </motion.div>
+                </motion.form>
             </div>
-        </div>
+            </div>
+        </AdminGuard>
     )
 }
-
-// Removed unnecessary function definition

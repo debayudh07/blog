@@ -1,19 +1,47 @@
-import  { Schema, model, models } from 'mongoose';
+// Firebase Firestore types for BlogPost
+export interface BlogPost {
+  id?: string; // Firestore document ID
+  title: string;
+  author: string;
+  authorId: string; // Firebase Auth UID
+  category: string;
+  content: string;
+  images?: string[]; // URLs for images
+  tags?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  isDraft: boolean;
+  publishDate?: string; // ISO string
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
+}
 
-const BlogPostSchema = new Schema({
-  title: { type: String, required: true },
-  author: { type: String, required: true },
-  category: { type: String, required: true },
-  content: { type: String, required: true },
-  images: [{ type: String }], // URLs for images
-  tags: [{ type: String }],
-  seoTitle: { type: String },
-  seoDescription: { type: String },
-  isDraft: { type: Boolean, default: false },
-  publishDate: { type: Date },
-}, { timestamps: true });
+// Type for creating a new blog post (without auto-generated fields)
+export interface CreateBlogPost {
+  title: string;
+  author: string;
+  authorId: string;
+  category: string;
+  content: string;
+  images?: string[];
+  tags?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  isDraft: boolean;
+  publishDate?: string;
+}
 
-// Check if the model already exists to avoid overwriting during hot reloads
-const BlogPost = models.BlogPost || model('BlogPost', BlogPostSchema);
-
-export default BlogPost;
+// Type for updating a blog post
+export interface UpdateBlogPost {
+  id: string;
+  title?: string;
+  author?: string;
+  category?: string;
+  content?: string;
+  images?: string[];
+  tags?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  isDraft?: boolean;
+  publishDate?: string;
+}

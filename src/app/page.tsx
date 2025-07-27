@@ -1,97 +1,119 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import Navbar from '@/components/functions/Navbar'
-import PostList from '@/components/functions/Postlist'
-
-// Mock data structure for posts and categories
-const posts = [
-  { id: 1, title: "Getting Started with React", content: "React is a popular JavaScript library for building user interfaces...", category: "Technology" },
-  { id: 2, title: "10 Tips for Healthy Living", content: "Maintaining a healthy lifestyle is crucial for overall well-being...", category: "Health" },
-  { id: 3, title: "Exploring the Streets of Tokyo", content: "Tokyo, the bustling capital of Japan, offers a unique blend of...", category: "Travel" },
-  { id: 4, title: "The Future of AI", content: "Artificial Intelligence is rapidly evolving and shaping various industries...", category: "Technology" },
-  { id: 5, title: "Delicious Vegan Recipes", content: "Vegan cuisine can be both nutritious and delicious. Here are some...", category: "Food" },
-  { id: 6, title: "Mindfulness Meditation Techniques", content: "Practicing mindfulness can significantly reduce stress and improve...", category: "Lifestyle" },
-  { id: 7, title: "Budget Travel Tips", content: "Traveling on a budget doesn't mean sacrificing experiences. Here are some tips...", category: "Travel" },
-  { id: 8, title: "Cybersecurity Best Practices", content: "In an increasingly digital world, protecting your online presence is crucial...", category: "Technology" },
-]
-
-const categories = ["All", "Technology", "Health", "Travel", "Food", "Lifestyle"]
-
-
 
 export default function HomePage() {
-  const [selectedCategory, setSelectedCategory] = useState("All")
-
-
-
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
       {/* Navbar */}
       <Navbar />
 
-     
-
-      {/* Main Content */}
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Featured Post Section */}
-        <section className="mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Featured Post</h2>
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white shadow-lg rounded-lg p-6 transform hover:scale-105 transition-transform duration-300"
-          >
-            <h3 className="text-xl font-semibold mb-2 text-blue-600">{posts[0].title}</h3>
-            <p className="text-gray-600 mb-4">{posts[0].content}</p>
-            <Link href={`/post/${posts[0].id}`} className="inline-block bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-300">
-              Read more
-            </Link>
-          </motion.div>
-        </section>
-
-        {/* Categories Section */}
-        <section className="mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Categories</h2>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`rounded-full px-3 py-1 md:px-4 md:py-2 text-sm font-medium transition-all duration-300 ${
-                  selectedCategory === category
-                    ? 'bg-blue-500 text-white shadow-md transform scale-105'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
+      {/* Hero Section */}
+      <main className="flex-grow flex items-center min-h-[80vh]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-8"
+            >
+              <motion.h1 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-tight"
               >
-                {category}
-              </button>
-            ))}
+                Welcome to
+                <span className="block bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent">
+                  My Blog Space
+                </span>
+              </motion.h1>
+              
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-2xl md:text-3xl lg:text-4xl font-medium text-gray-300"
+              >
+                by <span className="text-primary font-bold">Debayudh Basu</span>
+              </motion.h2>
+              
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-2xl leading-relaxed"
+              >
+                Dive into a world of thoughts, ideas, and stories. 
+                Exploring technology, creativity, and everything in between.
+              </motion.p>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="flex flex-col sm:flex-row gap-4 pt-4"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link 
+                    href="/viewpost" 
+                    className="inline-flex items-center bg-gradient-to-r from-primary to-emerald-400 text-black px-8 py-4 rounded-xl font-medium text-lg hover:from-emerald-400 hover:to-primary transition-all duration-300 shadow-lg hover:shadow-primary/30"
+                  >
+                    Explore Posts
+                    <motion.span
+                      className="ml-2"
+                      initial={{ x: 0 }}
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      →
+                    </motion.span>
+                  </Link>
+                </motion.div>
+                
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link 
+                    href="/createblog" 
+                    className="inline-flex items-center bg-transparent border-2 border-primary text-primary px-8 py-4 rounded-xl font-medium text-lg hover:bg-primary hover:text-black transition-all duration-300"
+                  >
+                    Start Writing
+                  </Link>
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
-        </section>
-
-        {/* Posts Section */}
-        <PostList  selectedCategory={selectedCategory} />
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white">
+      <footer className="bg-gradient-to-r from-gray-900 to-black border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-300 mb-4 md:mb-0">&copy; 2023 My Blog. All rights reserved.</p>
-            <div className="flex space-x-4">
-              <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors duration-300">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col md:flex-row justify-between items-center"
+          >
+            <p className="text-gray-400 mb-4 md:mb-0">&copy; 2023 My Blog. All rights reserved.</p>
+            <div className="flex space-x-6">
+              <Link href="/privacy" className="text-gray-400 hover:text-primary transition-colors duration-300 hover:underline">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <Link href="/terms" className="text-gray-400 hover:text-primary transition-colors duration-300 hover:underline">
                 Terms of Service
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </footer>
     </div>
