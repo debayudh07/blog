@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, MessageCircle, X, Trash2 } from 'lucide-react'
+import { MessageCircle, X, Trash2 } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
@@ -31,12 +32,6 @@ export default function PostViewer() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  // Redirect if not authenticated
-  if (!user) {
-    router.push('/');
-    return null;
-  }
-
   useEffect(() => {
     if (!user) return;
 
@@ -63,6 +58,12 @@ export default function PostViewer() {
 
     fetchPosts()
   }, [user])
+
+  // Redirect if not authenticated
+  if (!user) {
+    router.push('/');
+    return null;
+  }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this post?')) {
@@ -134,7 +135,7 @@ export default function PostViewer() {
             transition={{ duration: 0.5 }}
           >
             <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-12 max-w-md mx-auto">
-              <p className="text-gray-400 text-lg mb-6">You haven't created any posts yet.</p>
+              <p className="text-gray-400 text-lg mb-6">You haven&apos;t created any posts yet.</p>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -176,9 +177,11 @@ export default function PostViewer() {
                             transition={{ duration: 0.3 }}
                             className="h-full"
                           >
-                            <img 
+                            <Image 
                               src={post.images[0]} 
                               alt={post.title} 
+                              width={400}
+                              height={256}
                               className="w-full h-64 lg:h-full object-cover" 
                             />
                           </motion.div>
@@ -329,9 +332,11 @@ export default function PostViewer() {
                     transition={{ duration: 0.3 }}
                     className="mb-8"
                   >
-                    <img 
+                    <Image 
                       src={selectedPost.images[0]} 
                       alt={selectedPost.title} 
+                      width={800}
+                      height={320}
                       className="w-full h-80 object-cover rounded-2xl border-2 border-gray-700/30 shadow-xl" 
                     />
                   </motion.div>

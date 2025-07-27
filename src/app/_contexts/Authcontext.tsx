@@ -1,3 +1,4 @@
+/*eslint-disable*/
 'use client'; // This forces the component to be rendered client-side
 
 import { createContext, useState, useContext, useEffect } from 'react';

@@ -3,8 +3,9 @@
 import { useState, useCallback } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
+import TiptapImage from '@tiptap/extension-image'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -203,9 +204,11 @@ const ImageSection = ({ images, setImages, editor }: { images: { file: File, pre
                             whileHover={{ scale: 1.05 }}
                         >
                             <div className="relative overflow-hidden rounded-lg border border-gray-600/50 bg-gray-700/30 backdrop-blur-sm">
-                                <img
+                                <Image
                                     src={image.preview}
                                     alt={`Uploaded image ${index + 1}`}
+                                    width={100}
+                                    height={80}
                                     className="w-full h-20 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-110"
                                     onClick={() => addImageToEditor(image.preview)}
                                 />
@@ -333,16 +336,16 @@ export default function StylishBlogEditor() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [images, setImages] = useState<{ file: File, preview: string }[]>([])
 
+    const editor = useEditor({
+        extensions: [StarterKit, TiptapImage],
+        content: '<p>Start writing your blog post here...</p>',
+    })
+
     // Redirect if not authenticated
     if (!user) {
         router.push('/');
         return null;
     }
-
-    const editor = useEditor({
-        extensions: [StarterKit, Image],
-        content: '<p>Start writing your blog post here...</p>',
-    })
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
