@@ -229,16 +229,17 @@ const Navbar = () => {
 
   if (loading) {
     return (
-      <nav className="bg-black/95 backdrop-blur-md supports-[backdrop-filter]:bg-black/80 sticky top-0 z-50 w-full border-b border-gray-800/50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent">
-                My Blog
-              </Link>
+      <nav className="bg-black/20 backdrop-blur-lg border border-white/10 rounded-full mx-4 mt-4 sticky top-4 z-50 shadow-2xl">
+        <div className="max-w-2xl mx-auto px-4">
+          <div className="flex justify-between items-center h-14">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-primary to-emerald-400 rounded-lg flex items-center justify-center">
+                <span className="text-black font-bold text-lg">B</span>
+              </div>
+              <span className="text-xl font-semibold text-white">My Blog</span>
             </div>
             <div className="flex items-center">
-              <div className="animate-pulse h-8 w-24 bg-gray-800/60 rounded-lg"></div>
+              <div className="animate-pulse h-8 w-24 bg-white/10 rounded-full"></div>
             </div>
           </div>
         </div>
@@ -247,75 +248,73 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-black/95 backdrop-blur-md supports-[backdrop-filter]:bg-black/80 sticky top-0 z-50 w-full border-b border-gray-800/50 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+    <nav className="bg-black/20 backdrop-blur-lg border border-white/10 rounded-full mx-4 mt-4 sticky top-4 z-50 shadow-2xl">
+      <div className="max-w-2xl mx-auto px-4">
+        <div className="flex justify-between items-center h-14">
           <motion.div 
-            className="flex-shrink-0 flex items-center"
+            className="flex items-center space-x-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent hover:from-emerald-400 hover:to-primary transition-all duration-300">
+            <div className="w-7 h-7 bg-gradient-to-r from-primary to-emerald-400 rounded-lg flex items-center justify-center">
+              <span className="text-black font-bold text-base">B</span>
+            </div>
+            <Link href="/" className="text-lg font-semibold text-white hover:text-primary transition-colors duration-300">
               My Blog
             </Link>
           </motion.div>
+          
           <motion.div 
-            className="hidden md:flex items-center space-x-4"
+            className="hidden md:flex items-center space-x-6"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            {user ? (
+            <Link href="/" className="text-white/80 hover:text-white transition-colors duration-300 font-medium text-sm">
+              Home
+            </Link>
+            <Link href="/viewpost" className="text-white/80 hover:text-white transition-colors duration-300 font-medium text-sm">
+              Posts
+            </Link>
+            {user && (
               <>
-                <motion.span 
-                  className="text-gray-300 font-medium flex items-center gap-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  Welcome, {user.displayName || user.email?.split('@')[0] || 'User'}
-                  <AdminBadge />
-                </motion.span>
                 <AdminOnly>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" className="text-gray-300 hover:text-primary hover:bg-gray-800/50 transition-all duration-300 border border-transparent hover:border-gray-700/50">
-                      <Link href="/createblog" className="flex items-center">
-                        <PenSquare className="mr-2 h-4 w-4" />
-                        Create new post
-                      </Link>
-                    </Button>
-                  </motion.div>
+                  <Link href="/createblog" className="text-white/80 hover:text-white transition-colors duration-300 font-medium">
+                    Create
+                  </Link>
                 </AdminOnly>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="ghost" className="text-gray-300 hover:text-primary hover:bg-gray-800/50 transition-all duration-300 border border-transparent hover:border-gray-700/50">
-                    <Link href="/viewpost" className="flex items-center">
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      View posts
-                    </Link>
-                  </Button>
-                </motion.div>
                 <AdminOnly>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" className="text-orange-400 hover:text-orange-300 hover:bg-gray-800/50 transition-all duration-300 border border-transparent hover:border-gray-700/50">
-                      <Link href="/admin" className="flex items-center">
-                        <Shield className="mr-2 h-4 w-4" />
-                        Admin Panel
-                      </Link>
-                    </Button>
-                  </motion.div>
+                  <Link href="/admin" className="text-orange-400/80 hover:text-orange-400 transition-colors duration-300 font-medium">
+                    Admin
+                  </Link>
                 </AdminOnly>
+              </>
+            )}
+          </motion.div>
+
+          <motion.div 
+            className="hidden md:flex items-center space-x-4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <span className="text-white/70 text-sm font-medium">
+                  {user.displayName || user.email?.split('@')[0] || 'User'}
+                </span>
+                <AdminBadge />
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button 
-                    variant="destructive" 
+                    variant="ghost" 
                     onClick={handleLogout} 
-                    className="bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-red-700/30"
+                    className="text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 border border-white/20 hover:border-white/30 rounded-full px-4 py-2"
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
+                    <LogOut className="h-4 w-4" />
                   </Button>
                 </motion.div>
-              </>
+              </div>
             ) : (
               <AuthDialog />
             )}
@@ -328,9 +327,9 @@ const Navbar = () => {
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-expanded={isMenuOpen}
                 aria-label="Toggle menu"
-                className="text-gray-300 hover:text-primary hover:bg-gray-800/50 transition-all duration-300"
+                className="text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-full"
               >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </motion.div>
           </div>
@@ -344,82 +343,57 @@ const Navbar = () => {
             exit="closed"
             variants={menuVariants}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-black/95 backdrop-blur-md border-t border-gray-800/50"
+            className="md:hidden bg-black/40 backdrop-blur-lg border-t border-white/10 rounded-b-3xl mt-2 mx-4"
           >
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <div className="px-6 pt-4 pb-6 space-y-3">
+              <Link href="/" className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2">
+                Home
+              </Link>
+              <Link href="/viewpost" className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2">
+                Posts
+              </Link>
               {user ? (
                 <>
-                  <motion.span 
-                    className="block text-gray-300 px-3 py-2 font-medium flex items-center gap-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    Welcome, {user.displayName || user.email?.split('@')[0] || 'User'}
-                    <AdminBadge />
-                  </motion.span>
                   <AdminOnly>
+                    <Link href="/createblog" className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2">
+                      Create
+                    </Link>
+                  </AdminOnly>
+                  <AdminOnly>
+                    <Link href="/admin" className="block text-orange-400/80 hover:text-orange-400 transition-colors duration-300 font-medium py-2">
+                      Admin
+                    </Link>
+                  </AdminOnly>
+                  <div className="border-t border-white/10 pt-3 mt-3">
+                    <motion.span 
+                      className="block text-white/70 text-sm font-medium py-2 flex items-center gap-2"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      {user.displayName || user.email?.split('@')[0] || 'User'}
+                      <AdminBadge />
+                    </motion.span>
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-primary hover:bg-gray-800/50 transition-all duration-300">
-                        <Link href="/createblog" className="flex items-center">
-                          <PenSquare className="mr-2 h-4 w-4" />
-                          Create new post
-                        </Link>
+                      <Button 
+                        variant="ghost" 
+                        onClick={handleLogout} 
+                        className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-full"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
                       </Button>
                     </motion.div>
-                  </AdminOnly>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-primary hover:bg-gray-800/50 transition-all duration-300">
-                      <Link href="/viewpost" className="flex items-center">
-                        <BookOpen className="mr-2 h-4 w-4" />
-                        View posts
-                      </Link>
-                    </Button>
-                  </motion.div>
-                  <AdminOnly>
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.35 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Button variant="ghost" className="w-full justify-start text-orange-400 hover:text-orange-300 hover:bg-gray-800/50 transition-all duration-300">
-                        <Link href="/admin" className="flex items-center">
-                          <Shield className="mr-2 h-4 w-4" />
-                          Admin Panel
-                        </Link>
-                      </Button>
-                    </motion.div>
-                  </AdminOnly>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button 
-                      variant="destructive" 
-                      onClick={handleLogout} 
-                      className="w-full justify-start bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-300"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Logout
-                    </Button>
-                  </motion.div>
+                  </div>
                 </>
               ) : (
                 <motion.div 
-                  className="px-3 py-2"
+                  className="pt-3"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}

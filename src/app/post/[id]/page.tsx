@@ -7,7 +7,8 @@ import { ArrowLeft, Calendar, User, Tag, Clock, Share2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { useAuth } from '@/app/_contexts/Authcontext'
 import { useRouter, useParams } from 'next/navigation'
-import Navbar from '@/components/functions/Navbar'
+import Navbar from '@/components/functions/NavbarNew'
+import DarkVeil from '@/components/ui/darkveil'
 import Link from 'next/link'
 
 interface Post {
@@ -76,18 +77,37 @@ export default function PostPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <motion.div 
-            className="text-center py-20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-6"></div>
-            <p className="text-gray-300 text-xl">Loading post...</p>
-          </motion.div>
+      <div className="relative flex flex-col min-h-screen bg-black overflow-hidden">
+        {/* DarkVeil Background */}
+        <div className="absolute inset-0 z-0">
+          <DarkVeil 
+            hueShift={42}
+            speed={2.5}
+            noiseIntensity={0.02}
+            scanlineIntensity={0.1}
+            scanlineFrequency={1}
+            warpAmount={1.7}
+            resolutionScale={1}
+          />
+        </div>
+        
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+        
+        {/* Content */}
+        <div className="relative z-20 flex flex-col min-h-screen">
+          <Navbar />
+          <div className="container mx-auto px-4 py-8 pt-24">
+            <motion.div 
+              className="text-center py-20"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-6"></div>
+              <p className="text-gray-300 text-xl">Loading post...</p>
+            </motion.div>
+          </div>
         </div>
       </div>
     );
@@ -95,19 +115,37 @@ export default function PostPage() {
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <motion.div 
-            className="text-center py-20"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-12 max-w-md mx-auto">
-              <p className="text-gray-400 text-lg mb-6">{error || 'Post not found'}</p>
-              <Button 
-                onClick={() => router.back()} 
+      <div className="relative flex flex-col min-h-screen bg-black overflow-hidden">
+        {/* DarkVeil Background */}
+        <div className="absolute inset-0 z-0">
+          <DarkVeil 
+            hueShift={42}
+            speed={2.5}
+            noiseIntensity={0.02}
+            scanlineIntensity={0.1}
+            scanlineFrequency={1}
+            warpAmount={1.7}
+            resolutionScale={1}
+          />
+        </div>
+        
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+        
+        {/* Content */}
+        <div className="relative z-20 flex flex-col min-h-screen">
+          <Navbar />
+          <div className="container mx-auto px-4 py-8 pt-24">
+            <motion.div 
+              className="text-center py-20"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-12 max-w-md mx-auto">
+                <p className="text-gray-400 text-lg mb-6">{error || 'Post not found'}</p>
+                <Button 
+                  onClick={() => router.back()} 
                 className="bg-gradient-to-r from-primary to-emerald-400 text-black hover:from-emerald-400 hover:to-primary transition-all duration-300 font-medium px-6 py-3 shadow-lg hover:shadow-primary/30"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -115,17 +153,36 @@ export default function PostPage() {
               </Button>
             </div>
           </motion.div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      <Navbar />
+    <div className="relative flex flex-col min-h-screen bg-black overflow-hidden">
+      {/* DarkVeil Background */}
+      <div className="absolute inset-0 z-0">
+        <DarkVeil 
+          hueShift={42}
+          speed={2.5}
+          noiseIntensity={0.02}
+          scanlineIntensity={0.1}
+          scanlineFrequency={1}
+          warpAmount={1.7}
+          resolutionScale={1}
+        />
+      </div>
       
-      {/* Back Button */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/40 z-10"></div>
+      
+      {/* Content */}
+      <div className="relative z-20 flex flex-col min-h-screen">
+        <Navbar />
+        
+        {/* Back Button */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -282,6 +339,7 @@ export default function PostPage() {
           </motion.div>
         </article>
       </main>
+      </div>
     </div>
   );
 }

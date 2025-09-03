@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, X, Trash2 } from 'lucide-react'
 import Image from 'next/image'
@@ -9,8 +9,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { useAuth } from '@/app/_contexts/Authcontext'
 import { useRouter } from 'next/navigation'
-import Navbar from '@/components/functions/Navbar'
+
 import { AdminOnly } from '@/components/functions/AdminGuard'
+import Navbar from '@/components/functions/NavbarNew';
+import DarkVeil from '@/components/ui/darkveil'
 
 interface Post {
   id: string;
@@ -59,12 +61,6 @@ export default function PostViewer() {
     fetchPosts()
   }, [user])
 
-  // Redirect if not authenticated
-  if (!user) {
-    router.push('/');
-    return null;
-  }
-
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this post?')) {
       return;
@@ -98,27 +94,70 @@ export default function PostViewer() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        <Navbar />
-        <div className="container mx-auto p-4">
-          <motion.div 
-            className="text-center py-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-300 text-lg">Loading your posts...</p>
-          </motion.div>
+      <div className="relative flex flex-col min-h-screen bg-black overflow-hidden">
+        {/* DarkVeil Background */}
+        <div className="absolute inset-0 z-0">
+          <DarkVeil 
+            hueShift={42}
+            speed={2.5}
+            noiseIntensity={0.02}
+            scanlineIntensity={0.1}
+            scanlineFrequency={1}
+            warpAmount={1.7}
+            resolutionScale={1}
+          />
+        </div>
+        
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+        
+        {/* Content */}
+        <div className="relative z-20 flex flex-col min-h-screen">
+          <Navbar />
+          <div className="container mx-auto p-4 pt-24">
+            <motion.div 
+              className="text-center py-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-gray-300 text-lg">Loading your posts...</p>
+            </motion.div>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Redirect if not authenticated
+  if (!user) {
+    router.push('/');
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      <Navbar />
-      <div className="container mx-auto p-4">
+    <div className="relative flex flex-col min-h-screen bg-black overflow-hidden">
+      {/* DarkVeil Background */}
+      <div className="absolute inset-0 z-0">
+        <DarkVeil 
+          hueShift={42}
+          speed={2.5}
+          noiseIntensity={0.02}
+          scanlineIntensity={0.1}
+          scanlineFrequency={1}
+          warpAmount={1.7}
+          resolutionScale={1}
+        />
+      </div>
+      
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/40 z-10"></div>
+      
+      {/* Content */}
+      <div className="relative z-20 flex flex-col min-h-screen">
+        <Navbar />
+        <div className="container mx-auto p-4 pt-[9rem]">
         <motion.h1 
           className="text-4xl font-bold mb-8 text-white text-center"
           initial={{ opacity: 0, y: -30 }}
@@ -410,6 +449,7 @@ export default function PostViewer() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
     </div>
   )

@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AdminGuard, AdminBadge } from '@/components/functions/AdminGuard'
 import { useAuth } from '@/app/_contexts/Authcontext'
-import Navbar from '@/components/functions/Navbar'
+import Navbar from '@/components/functions/NavbarNew'
+import DarkVeil from '@/components/ui/darkveil'
 import { doc, updateDoc, collection, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 
@@ -95,13 +96,31 @@ export default function AdminPanel() {
 
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        <Navbar />
+      <div className="relative flex flex-col min-h-screen bg-black overflow-hidden">
+        {/* DarkVeil Background */}
+        <div className="absolute inset-0 z-0">
+          <DarkVeil 
+            hueShift={42}
+            speed={2.5}
+            noiseIntensity={0.02}
+            scanlineIntensity={0.1}
+            scanlineFrequency={1}
+            warpAmount={1.7}
+            resolutionScale={1}
+          />
+        </div>
         
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+        
+        {/* Content */}
+        <div className="relative z-20 flex flex-col min-h-screen">
+          <Navbar />
+          
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
@@ -274,6 +293,7 @@ export default function AdminPanel() {
               </div>
             )}
           </motion.div>
+          </div>
         </div>
       </div>
     </AdminGuard>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TiptapImage from '@tiptap/extension-image'
@@ -14,10 +14,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Loader2, ImagePlus, X } from "lucide-react"
-import Navbar from '@/components/functions/Navbar'
+
 import { AdminGuard } from '@/components/functions/AdminGuard'
 import { useAuth } from '@/app/_contexts/Authcontext'
 import { useRouter } from 'next/navigation'
+import Navbar from '@/components/functions/NavbarNew'
+import DarkVeil from '@/components/ui/darkveil'
 
 const MotionCard = motion(Card)
 
@@ -322,7 +324,7 @@ const PublishSettings = ({ isDraft, setIsDraft, publishDate, setPublishDate }: {
 )
 
 export default function StylishBlogEditor() {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
     
     const [title, setTitle] = useState('')
@@ -339,11 +341,27 @@ export default function StylishBlogEditor() {
     const editor = useEditor({
         extensions: [StarterKit, TiptapImage],
         content: '<p>Start writing your blog post here...</p>',
+        immediatelyRender: false,
     })
+
+    // Handle authentication redirect
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/');
+        }
+    }, [user, loading, router]);
+
+    // Show loading while authentication is being checked
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+                <div className="text-white text-xl">Loading...</div>
+            </div>
+        );
+    }
 
     // Redirect if not authenticated
     if (!user) {
-        router.push('/');
         return null;
     }
 
@@ -403,18 +421,29 @@ export default function StylishBlogEditor() {
 
     return (
         <AdminGuard>
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-                <Navbar />
+            <div className="relative flex flex-col min-h-screen bg-black overflow-hidden">
+                {/* DarkVeil Background */}
+                <div className="absolute inset-0 z-0">
+                    <DarkVeil 
+                        hueShift={42}
+                        speed={2.5}
+                        noiseIntensity={0.02}
+                        scanlineIntensity={0.1}
+                        scanlineFrequency={1}
+                        warpAmount={1.7}
+                        resolutionScale={1}
+                    />
+                </div>
+                
+                {/* Dark overlay for better text readability */}
+                <div className="absolute inset-0 bg-black/40 z-10"></div>
+                
+                {/* Content */}
+                <div className="relative z-20 flex flex-col min-h-screen">
+                    <Navbar />
 
-            <div className="container mx-auto py-8 px-4 min-h-screen">
-                <motion.h1
-                    className="text-5xl font-bold mb-12 text-center bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent"
-                    initial={{ opacity: 0, y: -50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    Create a New Blog Post
-                </motion.h1>
+                    <div className="container mx-auto py-8 px-4 min-h-screen pt-[9rem]">
+               
                 
                 <motion.form
                     onSubmit={handleSubmit}
@@ -510,7 +539,8 @@ export default function StylishBlogEditor() {
                         </FloatingCard>
                     </motion.div>
                 </motion.form>
-            </div>
+                </div>
+                </div>
             </div>
         </AdminGuard>
     )
